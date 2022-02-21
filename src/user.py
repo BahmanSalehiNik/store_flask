@@ -1,6 +1,6 @@
 from flask_restful import Resource, reqparse
 
-from src.query_decorator import query_method_decorator
+from query_decorator import query_method_decorator
 
 
 class User:

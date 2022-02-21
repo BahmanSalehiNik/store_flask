@@ -1,11 +1,13 @@
 from flask_restful import Resource, reqparse
 from flask_jwt import jwt_required
 
-from src.query_decorator import query_method_decorator
+from query_decorator import query_method_decorator
+
+from flask_cors import CORS, cross_origin
 
 
 class ItemList(Resource):
-
+    @cross_origin()
     @query_method_decorator
     def get(self, cursor=None):
         item_qs_query = "SELECT * FROM items"

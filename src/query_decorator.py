@@ -1,6 +1,6 @@
 from functools import wraps
 
-from src.db_config import DB_ADDRESS
+from db_config import DB_ADDRESS
 import sqlite3
 
 
