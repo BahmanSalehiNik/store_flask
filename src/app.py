@@ -6,7 +6,7 @@ from flask_cors import CORS,cross_origin
 #from src.items import Item, ItemList
 #from src.security import authenticate, identity
 #from src.user import UserRegister
-from resources.items import Item, ItemList
+from resources.item import Item, ItemList
 from security import authenticate, identity
 from resources.user import UserRegister
 
