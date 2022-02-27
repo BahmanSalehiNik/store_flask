@@ -1,33 +1,31 @@
-from query_decorator import query_method_decorator
+from db import db
 
 
-class ItemModel:
-    def __init__(self, name, price):
+class ItemModel(db.Model):
+    __tablename__ = 'items'
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(80))
+    price = db.Column(db.Float(precision=2))
+
+    store_id = db.Column(db.Integer, db.ForeignKey('stores.id'))
+    store = db.relationship('StoreModel')
+
+    def __init__(self, name, price, store_id):
         self.name = name
         self.price = price
+        self.store_id = store_id
 
     def json(self):
-        return {'name': self.name, 'price':self.price}
+        return {'name': self.name, 'price':self.price, 'store': self.store.name}
 
     @classmethod
-    @query_method_decorator
-    def find_item_by_name(cls, name, cursor=None):
-        update_item_by_name_query = "SELECT * FROM items WHERE name=?"
-        items_qs = cursor.execute(update_item_by_name_query, (name,))
-        row = items_qs.fetchone()
-        if not row:
-            return None
-        else:
-            return cls(name=row[1], price=row[2])
+    def find_item_by_name(cls, name):
+        return cls.query.filter_by(name=name).first()
 
-    @query_method_decorator
-    def insert(self, cursor=None):
+    def save_to_db(self):#, cursor=None):
+        db.session.add(self)
+        db.session.commit()
 
-        create_item_query = "INSERT INTO items VALUES (NULL , ?, ?)"
-        cursor.execute(create_item_query, (self.name, self.price))
-
-    @query_method_decorator
-    def update(self, price, cursor=None):
-        self.price = price
-        update_query = "UPDATE items SET price=? WHERE name=?"
-        cursor.execute(update_query, (price, self.name))
+    def delete_from_db(self):#, price):#, cursor=None):
+        db.session.delete(self)
+        db.session.commit()

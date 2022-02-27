@@ -1,34 +1,27 @@
 from query_decorator import query_method_decorator
+from db import db
 
 
-class UserModel:
-    def __init__(self, _id, username, password):
-        self.id = _id
+class UserModel(db.Model):
+    __tablename__ = 'users'
+
+    id = db.Column(db.Integer, primary_key=True)
+    username = db.Column(db.String(80))
+    password = db.Column(db.String(100))
+
+    def __init__(self, username, password):
+
         self.username = username
         self.password = password
 
-    @classmethod
-    @query_method_decorator
-    def find_by_username(cls, username, cursor=None):
-        select_query = f"SELECT * FROM users WHERE username=?"
-        user_qs = cursor.execute(select_query, (username,))
-        row = user_qs.fetchone()
-        if row:
-            user = cls(*row)
-        else:
-            user = None
-        return user
+    def save_to_db(self):
+        db.session.add(self)
+        db.session.commit()
 
     @classmethod
-    @query_method_decorator
-    def find_by_id(cls, _id, cursor=None):
+    def find_by_username(cls, username):#, cursor=None):
+        return  cls.query.filter_by(username=username).first()
 
-        select_query = f"SELECT * FROM users WHERE id=?"
-        user_qs = cursor.execute(select_query, (_id,))
-        row = user_qs.fetchone()
-        if row:
-            user = cls(*row)
-        else:
-            user = None
-
-        return user
+    @classmethod
+    def find_by_id(cls, _id):
+        return cls.query.filter_by(id=_id).first()
